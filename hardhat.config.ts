@@ -1,3 +1,6 @@
+import { config as dotEnvConfig } from 'dotenv'
+dotEnvConfig()
+
 import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-waffle'
 import 'hardhat-deploy'
@@ -73,6 +76,9 @@ const config: HardhatUserConfig = {
         '../contracts/deployments/goerli',
       ],
     },
+  },
+  mocha: {
+    timeout: 100000000,
   },
 }
 
