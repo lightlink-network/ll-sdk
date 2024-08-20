@@ -4,7 +4,7 @@ import type {
   TransactionResponse,
 } from '@ethersproject/abstract-provider'
 import type { Signer } from '@ethersproject/abstract-signer'
-import type { BigNumber,Contract } from 'ethers'
+import type { BigNumber, Contract } from 'ethers'
 
 import type { CrossChainMessenger } from '../cross-chain-messenger'
 import type { IBridgeAdapter } from './bridge-adapter'
@@ -37,6 +37,8 @@ export enum L2ChainID {
   ZORA_MAINNET = 7777777,
   MODE_SEPOLIA = 919,
   MODE_MAINNET = 34443,
+  LIGHTLINK_PEGASUS = 1891,
+  LIGHTLINK_PHOENIX = 1890,
 }
 
 /**
