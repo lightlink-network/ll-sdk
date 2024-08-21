@@ -10,61 +10,65 @@ import type {
   BridgeAdapterData,
   OEContractsLike,
   OEL1ContractsLike,
-  OEL2ContractsLike} from '../interfaces';
-import {
-  L1ChainID,
-  L2ChainID
+  OEL2ContractsLike,
 } from '../interfaces'
+import { L1ChainID, L2ChainID } from '../interfaces'
 
 // The addresses below should be for the proxy if it is a proxied contract.
 
 const portalAddresses = {
-  mainnet: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
-  goerli: '0x5b47E1A08Ea6d985D6649300584e6722Ec4B1383',
-  sepolia: '0x16Fc5058F25648194471939df75CF27A2fdC48BC',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: '0x29E98A32f18f978a85DAAD3d66D6b57B467cA0E9',
 }
 
 const l2OutputOracleAddresses = {
-  mainnet: '0xdfe97868233d1aa22e815a266982f2cf17685a27',
-  goerli: '0xE6Dfba0953616Bacab0c9A8ecb3a9BBa77FC15c0',
-  sepolia: '0x90E9c4f8a994a250F6aEfd61CAFb4F2e895D458F',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: '0x91C0b1164aB51c3310A7B0ceAEb208016671B1b9',
 }
 
 const addressManagerAddresses = {
-  mainnet: '0xdE1FCfB0851916CA5101820A69b13a4E276bd81F',
-  goerli: '0xa6f73589243a6A7a9023b1Fa0651b1d89c177111',
-  sepolia: '0x9bFE9c5609311DF1c011c47642253B78a4f33F4B',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: ethers.constants.AddressZero,
 }
 
 const l1StandardBridgeAddresses = {
-  mainnet: '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1',
-  goerli: '0x636Af16bf2f682dD3109e60102b8E1A089FedAa8',
-  sepolia: '0xFBb0621E0B23b5478B630BD55a5f21f67730B0F1',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: '0xc7206C8d1F5558a7C899A427bf26AfA377Ad0afA',
 }
 
 const l1CrossDomainMessengerAddresses = {
-  mainnet: '0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1',
-  goerli: '0x5086d1eEF304eb5284A0f6720f79403b4e9bE294',
-  sepolia: '0x58Cc85b8D04EA49cC6DBd3CbFFd00B4B8D6cb3ef',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: '0x48bA10ce4dA405e5fa53779cEA8250df1388CCDA',
 }
 
 const disputeGameFactoryAddresses = {
-  mainnet: '0xe5965Ab5962eDc7477C8520243A95517CD252fA9',
+  mainnet: ethers.constants.AddressZero,
   goerli: ethers.constants.AddressZero,
-  sepolia: '0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1',
+  sepolia: ethers.constants.AddressZero,
+}
+
+const challengeAddresses = {
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
+  sepolia: '0x98BAa45355ea1e6F0ABC74d6a38EBc8e82c57015',
 }
 
 // legacy
 const stateCommitmentChainAddresses = {
-  mainnet: '0xBe5dAb4A2e9cd0F27300dB4aB94BeE3A233AEB19',
-  goerli: '0x9c945aC97Baf48cB784AbBB61399beB71aF7A378',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
   sepolia: ethers.constants.AddressZero,
 }
 
 // legacy
 const canonicalTransactionChainAddresses = {
-  mainnet: '0x5E4e65926BA27467555EB562121fac00D24E9dD2',
-  goerli: '0x607F755149cFEB3a14E1Dc3A4E2450Cde7dfb04D',
+  mainnet: ethers.constants.AddressZero,
+  goerli: ethers.constants.AddressZero,
   sepolia: ethers.constants.AddressZero,
 }
 
@@ -84,6 +88,8 @@ export const DEPOSIT_CONFIRMATION_BLOCKS: {
   [L2ChainID.ZORA_MAINNET]: 50 as const,
   [L2ChainID.MODE_SEPOLIA]: 25 as const,
   [L2ChainID.MODE_MAINNET]: 50 as const,
+  [L2ChainID.LIGHTLINK_PEGASUS]: 1891 as const,
+  [L2ChainID.LIGHTLINK_PHOENIX]: 1890 as const,
 }
 
 export const CHAIN_BLOCK_TIMES: {
@@ -337,6 +343,44 @@ export const CONTRACT_ADDRESSES: {
       L2OutputOracle: '0x4317ba146D4933D889518a3e5E11Fe7a53199b04' as const,
       OptimismPortal2: '0x0000000000000000000000000000000000000000' as const,
       DisputeGameFactory: '0x0000000000000000000000000000000000000000' as const,
+    },
+    l2: DEFAULT_L2_CONTRACT_ADDRESSES,
+  },
+  [L2ChainID.LIGHTLINK_PEGASUS]: {
+    l1: {
+      AddressManager: '0x0000000000000000000000000000000000000000' as const,
+      L1CrossDomainMessenger:
+        '0x48bA10ce4dA405e5fa53779cEA8250df1388CCDA' as const,
+      L1StandardBridge: '0xc7206C8d1F5558a7C899A427bf26AfA377Ad0afA' as const,
+      StateCommitmentChain:
+        '0x0000000000000000000000000000000000000000' as const,
+      CanonicalTransactionChain:
+        '0x0000000000000000000000000000000000000000' as const,
+      BondManager: '0x0000000000000000000000000000000000000000' as const,
+      OptimismPortal: '0x29E98A32f18f978a85DAAD3d66D6b57B467cA0E9' as const,
+      L2OutputOracle: '0x91C0b1164aB51c3310A7B0ceAEb208016671B1b9' as const,
+      OptimismPortal2: '0x29E98A32f18f978a85DAAD3d66D6b57B467cA0E9' as const,
+      DisputeGameFactory: '0x0000000000000000000000000000000000000000' as const,
+      Challenge: '0x98BAa45355ea1e6F0ABC74d6a38EBc8e82c57015' as const,
+    },
+    l2: DEFAULT_L2_CONTRACT_ADDRESSES,
+  },
+  [L2ChainID.LIGHTLINK_PHOENIX]: {
+    l1: {
+      AddressManager: '0x0000000000000000000000000000000000000000' as const,
+      L1CrossDomainMessenger:
+        '0x48bA10ce4dA405e5fa53779cEA8250df1388CCDA' as const,
+      L1StandardBridge: '0xc7206C8d1F5558a7C899A427bf26AfA377Ad0afA' as const,
+      StateCommitmentChain:
+        '0x0000000000000000000000000000000000000000' as const,
+      CanonicalTransactionChain:
+        '0x0000000000000000000000000000000000000000' as const,
+      BondManager: '0x0000000000000000000000000000000000000000' as const,
+      OptimismPortal: '0x29E98A32f18f978a85DAAD3d66D6b57B467cA0E9' as const,
+      L2OutputOracle: '0x91C0b1164aB51c3310A7B0ceAEb208016671B1b9' as const,
+      OptimismPortal2: '0x29E98A32f18f978a85DAAD3d66D6b57B467cA0E9' as const,
+      DisputeGameFactory: '0x0000000000000000000000000000000000000000' as const,
+      Challenge: '0x98BAa45355ea1e6F0ABC74d6a38EBc8e82c57015' as const,
     },
     l2: DEFAULT_L2_CONTRACT_ADDRESSES,
   },

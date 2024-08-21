@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { getContractInterface, predeploys } from '@eth-optimism/contracts'
 import type {
-  BedrockCrossChainMessageProof,  BedrockOutputData} from '@eth-optimism/core-utils';
+  BedrockCrossChainMessageProof,
+  BedrockOutputData,
+} from '@eth-optimism/core-utils'
 import {
   decodeVersionedNonce,
   encodeCrossDomainMessageV0,
@@ -18,18 +20,13 @@ import {
 import type {
   BlockTag,
   TransactionReceipt,
-  TransactionRequest,  TransactionResponse} from '@ethersproject/abstract-provider';
-import {
-  Provider
+  TransactionRequest,
+  TransactionResponse,
 } from '@ethersproject/abstract-provider'
+import { Provider } from '@ethersproject/abstract-provider'
 import type { Signer } from '@ethersproject/abstract-signer'
-import type {
-  CallOverrides,
-  Overrides,
-  PayableOverrides} from 'ethers';
-import {
-  BigNumber,
-  ethers} from 'ethers'
+import type { CallOverrides, Overrides, PayableOverrides } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import * as rlp from 'rlp'
 import semver from 'semver'
 
@@ -41,7 +38,8 @@ import type {
   CrossChainMessageProof,
   CrossChainMessageRequest,
   IBridgeAdapter,
-  LowLevelMessage,  MessageLike,
+  LowLevelMessage,
+  MessageLike,
   MessageReceipt,
   MessageRequestLike,
   NumberLike,
@@ -52,15 +50,15 @@ import type {
   StateRoot,
   StateRootBatch,
   TokenBridgeMessage,
-  TransactionLike} from './interfaces';
+  TransactionLike,
+} from './interfaces'
 import {
   FPACProvenWithdrawal,
   MessageDirection,
   MessageReceiptStatus,
   MessageStatus,
 } from './interfaces'
-import type {
-  DeepPartial} from './utils';
+import type { DeepPartial } from './utils'
 import {
   CHAIN_BLOCK_TIMES,
   DEPOSIT_CONFIRMATION_BLOCKS,
@@ -125,6 +123,11 @@ export class CrossChainMessenger {
   public bedrock: boolean
 
   /**
+   * Whether or not LightLink compatibility is enabled.
+   */
+  public lightlink: boolean
+
+  /**
    * Cache for output root validation. Output roots are expensive to verify, so we cache them.
    */
   private _outputCache: Array<{ root: string; valid: boolean }> = []
@@ -152,8 +155,10 @@ export class CrossChainMessenger {
     contracts?: DeepPartial<OEContractsLike>
     bridges?: BridgeAdapterData
     bedrock?: boolean
+    lightlink?: boolean
   }) {
     this.bedrock = opts.bedrock ?? true
+    this.lightlink = opts.lightlink ?? true
 
     this.l1SignerOrProvider = toSignerOrProvider(opts.l1SignerOrProvider)
     this.l2SignerOrProvider = toSignerOrProvider(opts.l2SignerOrProvider)
@@ -746,10 +751,17 @@ export class CrossChainMessenger {
       } else {
         let timestamp: number
         if (this.bedrock) {
-          const output = await this.getMessageBedrockOutput(
-            resolved,
-            messageIndex
-          )
+          let output: any
+
+          if (this.lightlink) {
+            output = await this.getMessageLightLinkOutput(
+              resolved,
+              messageIndex
+            )
+          } else {
+            output = await this.getMessageBedrockOutput(resolved, messageIndex)
+          }
+
           if (output === null) {
             return MessageStatus.STATE_ROOT_NOT_PUBLISHED
           }
@@ -1229,6 +1241,11 @@ export class CrossChainMessenger {
         await this.contracts.l1.StateCommitmentChain.FRAUD_PROOF_WINDOW()
       ).toNumber()
     }
+    if (this.lightlink) {
+      return (
+        await this.contracts.l1.Challenge.finalizationSeconds()
+      ).toNumber()
+    }
 
     const oracleVersion = await this.contracts.l1.L2OutputOracle.version()
     const challengePeriod =
@@ -1538,6 +1555,52 @@ export class CrossChainMessenger {
   }
 
   /**
+   * Returns the LightLink output root that corresponds to the given message.
+   * @param message Message to get the LightLink output root for.
+   * @param messageIndex The index of the message, if multiple exist from multicall
+   * @returns LightLink output root.
+   */
+  public async getMessageLightLinkOutput(
+    message: MessageLike,
+    messageIndex = 0
+  ): Promise<BedrockOutputData | null> {
+    const resolved = await this.toCrossChainMessage(message, messageIndex)
+
+    // Outputs are only a thing for L2 to L1 messages.
+    if (resolved.direction === MessageDirection.L1_TO_L2) {
+      throw new Error(`cannot get a state root for an L1 to L2 message`)
+    }
+
+    const chainHead = await this.contracts.l1.L2OutputOracle.chainHead()
+    let currentHeaderNum = chainHead
+    let header = await this.contracts.l1.L2OutputOracle.getHeaderByNum(
+      currentHeaderNum
+    )
+
+    if (!header || header.l2Height < resolved.blockNumber) {
+      return null
+    }
+
+    while (header && header.l2Height >= resolved.blockNumber) {
+      const previousHeaderNum = currentHeaderNum - 1
+      const previousHeader =
+        await this.contracts.l1.L2OutputOracle.getHeaderByNum(previousHeaderNum)
+
+      if (!previousHeader || resolved.blockNumber > previousHeader.l2Height) {
+        return {
+          outputRoot: header.outputRoot,
+          l1Timestamp: 1,
+          l2BlockNumber: header.l2Height.toNumber(),
+          l2OutputIndex: currentHeaderNum,
+        }
+      }
+
+      currentHeaderNum = previousHeaderNum
+      header = previousHeader
+    }
+  }
+
+  /**
    * Returns the state root that corresponds to a given message. This is the state root for the
    * block in which the transaction was included, as published to the StateCommitmentChain. If the
    * state root for the given message has not been published yet, this function returns null.
@@ -1796,7 +1859,13 @@ export class CrossChainMessenger {
       throw new Error(`can only generate proofs for L2 to L1 messages`)
     }
 
-    const output = await this.getMessageBedrockOutput(resolved, messageIndex)
+    let output: any
+    if (this.lightlink) {
+      output = await this.getMessageLightLinkOutput(resolved, messageIndex)
+    } else {
+      output = await this.getMessageBedrockOutput(resolved, messageIndex)
+    }
+
     if (output === null) {
       throw new Error(`state root for message not yet published`)
     }
@@ -2406,7 +2475,7 @@ export class CrossChainMessenger {
     ): Promise<TransactionRequest> => {
       return this.bridges.ETH.populateTransaction.withdraw(
         ethers.constants.AddressZero,
-        predeploys.OVM_ETH,
+        ethers.constants.AddressZero,
         amount,
         opts
       )

@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { predeploys } from '@eth-optimism/contracts'
 import { hexStringEquals } from '@eth-optimism/core-utils'
-import type { BlockTag,TransactionRequest } from '@ethersproject/abstract-provider'
-import type { BigNumber,Overrides } from 'ethers';
+import type {
+  BlockTag,
+  TransactionRequest,
+} from '@ethersproject/abstract-provider'
+import type { BigNumber, Overrides } from 'ethers'
 import { ethers } from 'ethers'
 
-import type {
-  AddressLike,
-  NumberLike,
-  TokenBridgeMessage} from '../interfaces';
-import {
-  MessageDirection,
-} from '../interfaces'
+import type { AddressLike, NumberLike, TokenBridgeMessage } from '../interfaces'
+import { MessageDirection } from '../interfaces'
 import { toAddress } from '../utils/coercion'
 import { omit } from '../utils/misc-utils'
 import { StandardBridgeAdapter } from './standard-bridge'
@@ -108,9 +106,14 @@ export class ETHBridgeAdapter extends StandardBridgeAdapter {
     l2Token: AddressLike
   ): Promise<boolean> {
     // Only support ETH deposits and withdrawals.
+    console.log('l1Token', l1Token)
+    console.log('l2Token', l2Token)
     return (
       hexStringEquals(toAddress(l1Token), ethers.constants.AddressZero) &&
-      hexStringEquals(toAddress(l2Token), predeploys.OVM_ETH)
+      hexStringEquals(
+        toAddress(l2Token),
+        predeploys.OVM_ETH || ethers.constants.AddressZero
+      )
     )
   }
 

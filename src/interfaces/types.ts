@@ -58,6 +58,7 @@ export interface OEL1Contracts {
   OptimismPortal2?: Contract
   DisputeGameFactory?: Contract
   FaultDisputeGame?: Contract
+  Challenge?: Contract
 }
 
 /**

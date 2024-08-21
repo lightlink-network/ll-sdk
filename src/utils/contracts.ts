@@ -1,7 +1,7 @@
 import { getContractInterface, predeploys } from '@eth-optimism/contracts'
-import { Contract,ethers } from 'ethers'
+import { Contract, ethers } from 'ethers'
 
-import { ETHBridgeAdapter,StandardBridgeAdapter } from '../adapters'
+import { ETHBridgeAdapter, StandardBridgeAdapter } from '../adapters'
 import type { CrossChainMessenger } from '../cross-chain-messenger'
 import disputeGameFactory from '../forge-artifacts/DisputeGameFactory.json'
 import faultDisputeGame from '../forge-artifacts/FaultDisputeGame.json'
@@ -20,6 +20,8 @@ import optimismMintableERC20Factory from '../forge-artifacts/OptimismMintableERC
 import optimismPortal from '../forge-artifacts/OptimismPortal.json'
 import optimismPortal2 from '../forge-artifacts/OptimismPortal2.json'
 import proxyAdmin from '../forge-artifacts/ProxyAdmin.json'
+import challenge from '../forge-artifacts/Challenge.json'
+
 import type {
   AddressLike,
   BridgeAdapterData,
@@ -108,6 +110,9 @@ export const getContractInterfaceBedrock = (
       break
     case 'FaultDisputeGame':
       artifact = faultDisputeGame
+      break
+    case 'Challenge':
+      artifact = challenge
       break
   }
   return new ethers.utils.Interface(artifact.abi)
@@ -200,6 +205,7 @@ export const getAllOEContracts = (
       L2OutputOracle: undefined,
       DisputeGameFactory: undefined,
       OptimismPortal2: undefined,
+      Challenge: undefined,
     },
     l2: DEFAULT_L2_CONTRACT_ADDRESSES,
   }
