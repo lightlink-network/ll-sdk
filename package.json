@@ -1,7 +1,7 @@
 {
-  "name": "@eth-optimism/sdk",
-  "version": "3.3.2",
-  "description": "[Optimism] Tools for working with Optimism",
+  "name": "@lightlink-network/ll-sdk",
+  "version": "1.0.0",
+  "description": "[LightLink] Tools for working with LightLink",
   "main": "dist/index",
   "types": "dist/index",
   "files": [
@@ -25,14 +25,15 @@
   "keywords": [
     "optimism",
     "ethereum",
-    "sdk"
+    "sdk",
+    "lightlink"
   ],
-  "homepage": "https://github.com/ethereum-optimism/ecosystem/tree/main/packages/sdk#readme",
+  "homepage": "https://github.com/lightlink-network/ll-sdk",
   "license": "MIT",
-  "author": "Optimism PBC",
+  "author": "LightLink Network",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethereum-optimism/ecosystem.git"
+    "url": "https://github.com/lightlink-network/ll-sdk.git"
   },
   "devDependencies": {
     "@ethersproject/abstract-provider": "^5.7.0",
