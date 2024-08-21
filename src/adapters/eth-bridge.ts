@@ -106,8 +106,6 @@ export class ETHBridgeAdapter extends StandardBridgeAdapter {
     l2Token: AddressLike
   ): Promise<boolean> {
     // Only support ETH deposits and withdrawals.
-    console.log('l1Token', l1Token)
-    console.log('l2Token', l2Token)
     return (
       hexStringEquals(toAddress(l1Token), ethers.constants.AddressZero) &&
       hexStringEquals(
