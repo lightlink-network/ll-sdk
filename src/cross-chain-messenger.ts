@@ -2475,7 +2475,7 @@ export class CrossChainMessenger {
     ): Promise<TransactionRequest> => {
       return this.bridges.ETH.populateTransaction.withdraw(
         ethers.constants.AddressZero,
-        ethers.constants.AddressZero,
+        predeploys.OVM_ETH,
         amount,
         opts
       )
