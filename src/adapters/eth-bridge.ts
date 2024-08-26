@@ -108,10 +108,7 @@ export class ETHBridgeAdapter extends StandardBridgeAdapter {
     // Only support ETH deposits and withdrawals.
     return (
       hexStringEquals(toAddress(l1Token), ethers.constants.AddressZero) &&
-      hexStringEquals(
-        toAddress(l2Token),
-        predeploys.OVM_ETH || ethers.constants.AddressZero
-      )
+      hexStringEquals(toAddress(l2Token), predeploys.OVM_ETH)
     )
   }
 
