@@ -1,6 +1,6 @@
 {
   "name": "@lightlink-network/ll-sdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "[LightLink] Tools for working with LightLink",
   "main": "dist/index",
   "types": "dist/index",
